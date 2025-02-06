@@ -1,0 +1,25 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: user-service
+spec:
+  hosts:
+    - user-service  # This should match the Kubernetes service name for user-service
+  http:
+    - match:
+        - uri:
+            exact: "/api/v1/User/login"  # Match the login endpoint
+      route:
+        - destination:
+            host: user-service  # This is the Kubernetes service name for user-service
+            port:
+              number: 80  # Port where the user-service pod is exposed
+
+    - match:
+        - uri:
+            exact: "/api/v1/User/register"  # Match the register endpoint
+      route:
+        - destination:
+            host: user-service  # This should be the Kubernetes service name for user-service
+            port:
+              number: 80  # Port where the user-service pod is exposed
