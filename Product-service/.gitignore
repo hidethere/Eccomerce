@@ -1,3 +1,42 @@
+# Ignore Visual Studio files
 .vs/
-.appsettings.json
+*.suo
+*.user
+*.vcxproj.user
+*.cache
+*.log
+
+# Ignore build output
+bin/
+obj/
+
+# Ignore NuGet packages
+*.nupkg
+*.snupkg
+packages/
+project.lock.json
+
+# Ignore user secrets
+secrets.json
+**/secrets/
+
+# Ignore environment variables and configurations
+.env
 appsettings.Development.json
+appsettings.Local.json
+
+# Ignore JetBrains Rider and ReSharper files
+.idea/
+*.sln.iml
+*.DotSettings.user
+
+# Ignore temporary and generated files
+*.tmp
+*.bak
+*.swp
+*.DS_Store
+Thumbs.db
+
+# Ignore Entity Framework Migrations snapshot files (optional)
+Migrations/*.Designer.cs
+Migrations/*.resx
