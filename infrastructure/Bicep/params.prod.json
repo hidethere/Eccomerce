@@ -1,0 +1,8 @@
+{
+  "environment": {
+    "value": "prod"
+  },
+  "location": {
+    "value": "switzerlandnorth"
+  }
+}

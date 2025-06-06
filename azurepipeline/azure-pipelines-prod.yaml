@@ -1,0 +1,29 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+   name: 'SelfHostesPool'
+
+variables:
+  azureSubscription: 'AzureServiceConnection'  
+  resourceGroupName: 'rg-prod'
+  location: 'switzerlandnorth'
+  templateFile: 'main.bicep'
+  parametersFile: 'params.prod.json'
+  vpnRootCertificateData: $(vpnRootCertificateData)
+  vpnRootCertificateName: $(vpnRootCertificateName)
+  env: 'prod'
+
+steps:
+
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: $(azureSubscription)
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az --version
+      echo "Deploying Bicep..."
+      az deployment group create --resource-group $(resourceGroupName) --template-file $(templateFile) --parameters @$(parametersFile)

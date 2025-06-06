@@ -1,0 +1,29 @@
+trigger:
+  branches:
+    include:
+      - dev
+
+pool:
+   name: 'SelfHostedPool'
+
+variables:
+  azureSubscription: 'AzureServiceConnection'  
+  resourceGroupName: 'rg-dev'
+  templateFile: '$(Build.SourcesDirectory)/infrastructure/Bicep/main.bicep'
+  parametersFile: '$(Build.SourcesDirectory)/infrastructure/Bicep/params.dev.json'
+  vpnRootCertificateData: $(vpnRootCertificateData)
+  vpnRootCertificateName: $(vpnRootCertificateName)
+
+steps:
+- checkout: self
+
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: $(azureSubscription)
+    scriptType: 'ps'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      $vpnData = "$(vpnRootCertificateData)"
+      $vpnName = "$(vpnRootCertificateName)"
+      $params = "vpnRootCertificateData='$vpnData' vpnRootCertificateName='$vpnName'"
+      az deployment group create --resource-group $(resourceGroupName) --template-file $(templateFile) --parameters $params
