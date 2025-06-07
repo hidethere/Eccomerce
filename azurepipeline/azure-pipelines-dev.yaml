@@ -48,16 +48,7 @@ stages:
       - job: Deploy_${{ svc.name }}
         displayName: Deploy ${{ svc.name }}
         steps:
-          - script: |
-              echo "Build.SourcesDirectory: $(Build.SourcesDirectory)"
-              echo "Checking if Bicep file exists..."
-              if [ -f "$(Build.SourcesDirectory)/infrastructure/Bicep/main.bicep" ]; then
-                echo "Bicep file FOUND"
-              else
-                echo "Bicep file NOT FOUND"
-                ls -l $(Build.SourcesDirectory)/infrastructure/Bicep/
-              fi
-            displayName: 'Debug: Check paths and files'
+
           - task: AzureCLI@2
             inputs:
               azureSubscription: 'MyAzureServiceConnection'
@@ -66,7 +57,17 @@ stages:
               inlineScript: |
                 echo "Deploying ${{ svc.name }}..."
 
-                LINUX_TEMPLATE_PATH=$(echo "$(Build.SourcesDirectory)/infrastructure/Bicep/main.bicep" | sed 's|\\|/|g' | sed 's|C:|/mnt/c|i')
+                WIN_PATH="$(Build.SourcesDirectory)/infrastructure/Bicep/main.bicep"
+
+                if [[ "$WIN_PATH" == /mnt/c/* ]]; then
+                  # Already Linux-style path, no conversion needed
+                  LINUX_TEMPLATE_PATH="$WIN_PATH"
+                else
+                  # Convert Windows path to Linux path
+                  LINUX_TEMPLATE_PATH=$(echo "$WIN_PATH" | sed 's|\\|/|g' | sed 's|C:|/mnt/c|i')
+                fi
+
+                echo "Using Bicep template path: $LINUX_TEMPLATE_PATH"
 
                 az deployment group create \
                   --resource-group $(resourceGroup) \
@@ -77,3 +78,4 @@ stages:
                               env=$(env) \
                               image=$(acrLoginServer)/${{ svc.name }}:$(imageTag) \
                               revisionSuffix=rev-$(Build.BuildId)
+
