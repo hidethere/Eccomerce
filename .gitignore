@@ -2,18 +2,6 @@
 
 **/bin/
 **/obj/
-
-**/.local/
-**/.Properties/
-
-**/docker-volume/
-
-
-**/local.settings.json
-**/Development.settings.json
-**/appsettings.Development.json
-**/.local.settings.json
-
 **/.vscode/
 
 
