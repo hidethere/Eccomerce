@@ -48,6 +48,17 @@ stages:
       - job: Deploy_${{ svc.name }}
         displayName: Deploy ${{ svc.name }}
         steps:
+          - script: |
+              echo "Build.SourcesDirectory: $(Build.SourcesDirectory)"
+              echo "Checking if Bicep file exists..."
+              if [ -f "$(Build.SourcesDirectory)/infrastructure/Bicep/main.bicep" ]; then
+                echo "Bicep file FOUND"
+              else
+                echo "Bicep file NOT FOUND"
+                ls -l $(Build.SourcesDirectory)/infrastructure/Bicep/
+              fi
+            displayName: 'Debug: Check paths and files'
+        steps:
         - task: AzureCLI@2
           inputs:
             azureSubscription: 'MyAzureServiceConnection'
@@ -56,14 +67,11 @@ stages:
             inlineScript: |
               echo "Deploying ${{ svc.name }}..."
 
-              # Convert Windows path to Linux path
-              TEMPLATE_PATH_WIN="$(Build.SourcesDirectory)/infrastructure/Bicep/main.bicep"
-              TEMPLATE_PATH_LINUX="/mnt/c/${TEMPLATE_PATH_WIN:3}"
-              TEMPLATE_PATH_LINUX="${TEMPLATE_PATH_LINUX//\\//}"  # replace backslashes with forward slashes
+              LINUX_TEMPLATE_PATH=$(echo "$(Build.SourcesDirectory)/infrastructure/Bicep/main.bicep" | sed 's|\\|/|g' | sed 's|C:|/mnt/c|i')
 
               az deployment group create \
                 --resource-group $(resourceGroup) \
-                --template-file "$TEMPLATE_PATH_LINUX" \
+                --template-file "$LINUX_TEMPLATE_PATH" \
                 --parameters acrName=$(acrName) \
                             acrLoginServer=$(acrLoginServer) \
                             containerAppName=${{ svc.name }} \
