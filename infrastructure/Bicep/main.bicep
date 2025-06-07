@@ -36,6 +36,7 @@ module vnet 'modules/network.bicep' = {
   }
 } 
 
+//Identity
 module acaUserIdentity 'modules/uami.bicep' = {
   name: 'uamiDeploy'
   params: {
@@ -45,6 +46,7 @@ module acaUserIdentity 'modules/uami.bicep' = {
 }
 
 
+// nics
 module nicVm 'modules/nic.bicep' = {
   name: 'nicVmDeploy-${env}'
   params: {
@@ -58,6 +60,7 @@ module nicVm 'modules/nic.bicep' = {
 }
 
 
+
 // Linux vm for CICD Env
 module vm 'modules/cicdvm.bicep' = {
   name: 'vmLinuxDeploy-${env}'
@@ -68,6 +71,7 @@ module vm 'modules/cicdvm.bicep' = {
   }
 
 }
+
 
 // Container Registry
 module containerRegistry 'modules/acr.bicep' = {

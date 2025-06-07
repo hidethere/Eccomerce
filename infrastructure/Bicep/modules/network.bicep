@@ -57,30 +57,6 @@ resource vmSubnet 'Microsoft.Network/virtualNetworks/subnets@2024-05-01' = {
 
 
 
-// Nsg for Vm
-/*
-resource nsgVm 'Microsoft.Network/networkSecurityGroups@2023-04-01' = {
-  name: '${vmSubnetName}-nsg'
-  location: location
-  properties: {
-    securityRules: [
-      {
-        name: 'AllowSSH'
-        properties: {
-          priority: 1001
-          direction: 'Inbound'
-          access: 'Allow'
-          protocol: 'Tcp'
-          sourcePortRange: '*'
-          destinationPortRange: '22'
-          sourceAddressPrefix: '*' // replace with VPN IP if needed
-          destinationAddressPrefix: '*'
-        }
-      }
-    ]
-  }
-}*/
-
 resource apimNSG 'Microsoft.Network/networkSecurityGroups@2022-07-01' = {
   name: 'nsg-apim-dev'
   location: location

@@ -9,7 +9,7 @@ variables:
   value: '$(Build.BuildId)'
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: MySelfHostedPool
 
 parameters:
   - name: services
