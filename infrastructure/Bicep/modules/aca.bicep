@@ -1,26 +1,62 @@
-param containerAppsEnvName string
-param location string 
-param vnetId string
-param subnetName string
+param containerAppName string
+param location string
+param environmentName string
+param acrLoginServer string
+param image string
+param revisionSuffix string
+param userIdentityId string
+param userIdentityPrincipalId string
+param acrName string
 
-resource containerAppsEnv 'Microsoft.App/managedEnvironments@2025-01-01' = {
-  name: containerAppsEnvName
+resource acaEnv 'Microsoft.App/managedEnvironments@2023-05-01' existing = {
+  name: environmentName
+}
+
+resource acr 'Microsoft.ContainerRegistry/registries@2023-01-01' existing = {
+  name: acrName
+}
+resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
+  name: containerAppName
   location: location
-  properties: {
-    
-    vnetConfiguration: {
-      infrastructureSubnetId: '${vnetId}/subnets/${subnetName}'
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${userIdentityId}': {}
     }
-    /*appLogsConfiguration: {
-      destination: 'log-analytics'
-      logAnalyticsConfiguration: {
-        customerId: '<log-analytics-customer-id>'
-        sharedKey: '<log-analytics-shared-key>'
+  }
+  properties: {
+    managedEnvironmentId: acaEnv.id
+    configuration: {
+      ingress: {
+        external: true
+        targetPort: 80
       }
-    }*/
+      registries: [
+        {
+          server: acrLoginServer
+          identity: userIdentityId
+        }
+      ]
+    }
+    template: {
+      containers: [
+        {
+          name: containerAppName
+          image: image
+        }
+      ]
+      revisionSuffix: revisionSuffix
+    }
   }
 }
 
-// app logs costumer and shared key should be replaced with actual values
+resource acrPullRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(userIdentityId, 'acrpull')
+  scope: acr
+  properties: {
+    principalId: userIdentityPrincipalId
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d') // AcrPull
+    principalType: 'ServicePrincipal'
+  }
+}
 
-output containerAppsEnvId string = containerAppsEnv.id

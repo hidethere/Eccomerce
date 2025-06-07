@@ -4,15 +4,25 @@ param containerAppsSubnetName string =  'containerAppsSubnet-${env}'
 param vmSubnetName string = 'vmSubnet-${env}'
 param vnetName string = 'vnet-Eccomerce-${env}'
 param location string = resourceGroup().location
-param containerAppsEnvName string = 'containerAppsEnv-Eccomerce-${env}'
+
 param sqlServerName string = 'sqlServer-Eccomerce-${env}-v1'
 param cosmosAccountName string = 'cosmosacc-eccomerce-${env}-v1'
 param redisName string = 'redisEccomerce${env}v1'
 param sbName string = 'sb-Eccomerce-${env}-v1'
 param eventHubName string = 'eventHub-Eccommerce-${env}-v1'
 param keyVaultName string = 'keyVault-Eccomerce-${env}v1'
-param acrName string = 'acreccomerce${env}v1'
 param apimName string = 'apim-Eccomerce-${env}v1'
+param acrName string // injected from the pipeline
+
+
+// Acr
+param image string // Injected from the pipeline
+param BuildId string // Injected from the pipeline
+param revisionSuffix string = 'rev-${BuildId}'
+
+// ACA
+param containerAppsEnvName string = 'containerAppsEnv-Eccomerce-${env}'
+param containerAppsName string = 'containerapps-eccomerce-${env}'
 
 // Vnet
 
@@ -26,6 +36,13 @@ module vnet 'modules/network.bicep' = {
   }
 } 
 
+module acaUserIdentity 'modules/uami.bicep' = {
+  name: 'uamiDeploy'
+  params: {
+    name: 'aca-uami-${env}'
+    location: location
+  }
+}
 
 
 module nicVm 'modules/nic.bicep' = {
@@ -52,15 +69,38 @@ module vm 'modules/cicdvm.bicep' = {
 
 }
 
+// Container Registry
+module containerRegistry 'modules/acr.bicep' = {
+  name: 'containerRegistryDeploy-${env}'
+  params: {
+    acrName: acrName
+    location: location
+  }
+}
 
 // Container Apps Env
-module containerAppsEnv 'modules/aca.bicep' = {
+module containerAppsEnv 'modules/acaenv.bicep' = {
   name: 'containerAppsEnvDeploy-${env}-1'
   params: {
     vnetId: vnet.outputs.vnetId
     containerAppsEnvName: containerAppsEnvName
     subnetName: containerAppsSubnetName
     location: location
+  }
+}
+
+// Azure Container Apps
+module containerApps 'modules/aca.Bicep' = {
+  params: {
+    acrLoginServer: containerRegistry.outputs.acrLoginServer
+    containerAppName: containerAppsName
+    environmentName: containerAppsEnvName
+    acrName: containerRegistry.outputs.acrName
+    image: image // injected from the pipeline
+    location: location
+    revisionSuffix: revisionSuffix // inject from the pipeline
+    userIdentityId: acaUserIdentity.outputs.uamiId
+    userIdentityPrincipalId: acaUserIdentity.outputs.principalId
   }
 }
 
@@ -122,14 +162,6 @@ module keyVault 'modules/keyVault.bicep' = {
   }
 }
 
-// Container Registry
-module containerRegistry 'modules/acr.bicep' = {
-  name: 'containerRegistryDeploy-${env}'
-  params: {
-    acrName: acrName
-    location: location
-  }
-}
 
 module apim 'modules/apim.bicep' = {
   name: 'apimDeploy-${env}'

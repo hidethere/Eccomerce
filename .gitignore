@@ -12,6 +12,7 @@
 **/local.settings.json
 **/Development.settings.json
 **/appsettings.Development.json
+**/appsettings.json
 **/.local.settings.json
 
 **/.vscode/

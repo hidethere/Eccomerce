@@ -8,8 +8,8 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' =
     name: 'Premium'
   }
   properties: {
-    adminUserEnabled: false
-    publicNetworkAccess: 'Disabled'
+    adminUserEnabled: true
+    publicNetworkAccess: 'Enabled'
   }
 }
 
@@ -17,3 +17,4 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' =
 
 output acrId string = containerRegistry.id
 output acrLoginServer string = containerRegistry.properties.loginServer
+output acrName string = containerRegistry.name

@@ -4,5 +4,14 @@
   },
   "location": {
     "value": "switzerlandnorth"
+  },
+  "acrName": {
+    "value": "acreccomercedevv1"
+  },
+  "image": {
+    "value": "nginx"
+  },
+  "BuildId": {
+    "value": "1234567890" 
   }
 }

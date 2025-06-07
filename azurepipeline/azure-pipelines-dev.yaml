@@ -3,27 +3,60 @@ trigger:
     include:
       - dev
 
-pool:
-   name: 'SelfHostedPool'
-
 variables:
-  azureSubscription: 'AzureServiceConnection'  
-  resourceGroupName: 'rg-dev'
-  templateFile: '$(Build.SourcesDirectory)/infrastructure/Bicep/main.bicep'
-  parametersFile: '$(Build.SourcesDirectory)/infrastructure/Bicep/params.dev.json'
-  vpnRootCertificateData: $(vpnRootCertificateData)
-  vpnRootCertificateName: $(vpnRootCertificateName)
+- group: MyDevInfraVars
+- name: imageTag
+  value: '$(Build.BuildId)'
 
-steps:
-- checkout: self
+pool:
+  vmImage: 'ubuntu-latest'
 
-- task: AzureCLI@2
-  inputs:
-    azureSubscription: $(azureSubscription)
-    scriptType: 'ps'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      $vpnData = "$(vpnRootCertificateData)"
-      $vpnName = "$(vpnRootCertificateName)"
-      $params = "vpnRootCertificateData='$vpnData' vpnRootCertificateName='$vpnName'"
-      az deployment group create --resource-group $(resourceGroupName) --template-file $(templateFile) --parameters $params
+parameters:
+  - name: services
+    type: object
+    default:
+      - name: InventoryService
+        path: src/InventoryService/src/InventoryService.API
+      # Add more services here...
+
+stages:
+- stage: BuildAndPush
+  displayName: Build and Push All Microservices
+  jobs:
+    - ${{ each svc in parameters.services }}:
+      - job: BuildPush_${{ svc.name }}
+        displayName: Build and Push ${{ svc.name }}
+        steps:
+        - task: Docker@2
+          inputs:
+            containerRegistry: 'MyACRServiceConnection'
+            repository: ${{ svc.name }}
+            command: 'buildAndPush'
+            Dockerfile: '$$(Build.SourcesDirectory)/${{ svc.path }}/Dockerfile'
+            tags: |
+              $(imageTag)
+
+- stage: Deploy
+  dependsOn: BuildAndPush
+  displayName: Deploy All Services to ACA
+  jobs:
+    - ${{ each svc in parameters.services }}:
+      - job: Deploy_${{ svc.name }}
+        displayName: Deploy ${{ svc.name }}
+        steps:
+        - task: AzureCLI@2
+          inputs:
+            azureSubscription: 'MyAzureServiceConnection'
+            scriptType: 'bash'
+            scriptLocation: 'inlineScript'
+            inlineScript: |
+              echo "Deploying ${{ svc.name }}..."
+              az deployment group create \
+                --resource-group $(resourceGroup) \
+                --template-file $(Build.SourcesDirectory)/infrastructure/Bicep/main.bicep \
+                --parameters acrName=$(acrName) \
+                             acrLoginServer=$(acrLoginServer) \
+                             containerAppName=${{ svc.name }} \
+                             env=$(env) \
+                             image=$(acrLoginServer)/${{ svc.name }}:$(imageTag) \
+                             revisionSuffix=rev-$(Build.BuildId)
