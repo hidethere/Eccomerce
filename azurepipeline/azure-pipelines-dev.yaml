@@ -48,6 +48,7 @@ stages:
       - job: Deploy_${{ svc.name }}
         displayName: Deploy ${{ svc.name }}
         steps:
+        
 
           - task: AzureCLI@2
             inputs:
