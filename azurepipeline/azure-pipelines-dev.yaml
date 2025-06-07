@@ -59,19 +59,14 @@ stages:
 
                 WIN_PATH="$(Build.SourcesDirectory)/infrastructure/Bicep/main.bicep"
 
-                if [[ "$WIN_PATH" == /mnt/c/* ]]; then
-                  # Already Linux-style path, no conversion needed
-                  LINUX_TEMPLATE_PATH="$WIN_PATH"
-                else
-                  # Convert Windows path to Linux path
-                  LINUX_TEMPLATE_PATH=$(echo "$WIN_PATH" | sed 's|\\|/|g' | sed 's|C:|/mnt/c|i')
-                fi
+                # Escape backslashes for az CLI
+                ESCAPED_WIN_PATH=$(echo "$WIN_PATH" | sed 's/\\/\\\\/g')
 
-                echo "Using Bicep template path: $LINUX_TEMPLATE_PATH"
+                echo "Using Windows path for deployment: $ESCAPED_WIN_PATH"
 
                 az deployment group create \
                   --resource-group $(resourceGroup) \
-                  --template-file "$LINUX_TEMPLATE_PATH" \
+                  --template-file "$ESCAPED_WIN_PATH" \
                   --parameters acrName=$(acrName) \
                               acrLoginServer=$(acrLoginServer) \
                               containerAppName=${{ svc.name }} \
