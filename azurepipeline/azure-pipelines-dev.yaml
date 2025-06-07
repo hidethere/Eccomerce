@@ -50,6 +50,7 @@ stages:
         steps:
         
 
+
           - task: AzureCLI@2
             inputs:
               azureSubscription: 'MyAzureServiceConnection'
@@ -58,16 +59,15 @@ stages:
               inlineScript: |
                 echo "Deploying ${{ svc.name }}..."
 
-                WIN_PATH="$(Build.SourcesDirectory)/infrastructure/Bicep/main.bicep"
+                WINDOWS_TEMPLATE_PATH="$(Build.SourcesDirectory)/infrastructure/Bicep/main.bicep"
 
-                # Escape backslashes for az CLI
-                ESCAPED_WIN_PATH=$(echo "$WIN_PATH" | sed 's/\\/\\\\/g')
+                # Make sure backslashes are escaped or replaced with forward slashes only if your shell requires
 
-                echo "Using Windows path for deployment: $ESCAPED_WIN_PATH"
+                echo "Using Windows path for deployment: $WINDOWS_TEMPLATE_PATH"
 
                 az deployment group create \
                   --resource-group $(resourceGroup) \
-                  --template-file "$ESCAPED_WIN_PATH" \
+                  --template-file "$WINDOWS_TEMPLATE_PATH" \
                   --parameters acrName=$(acrName) \
                               acrLoginServer=$(acrLoginServer) \
                               containerAppName=${{ svc.name }} \
