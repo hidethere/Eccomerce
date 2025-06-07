@@ -58,7 +58,6 @@ stages:
                 ls -l $(Build.SourcesDirectory)/infrastructure/Bicep/
               fi
             displayName: 'Debug: Check paths and files'
-        steps:
         - task: AzureCLI@2
           inputs:
             azureSubscription: 'MyAzureServiceConnection'
