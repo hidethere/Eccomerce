@@ -27,18 +27,15 @@ stages:
       - job: BuildPush_${{ svc.name }}
         displayName: Build and Push ${{ svc.name }}
         steps:
-        - task: Docker@2
-          inputs:
-            containerRegistry: 'MyACRServiceConnection'
-            repository: ${{ svc.name }}
-            command: 'buildAndPush'
-            Dockerfile: '$(Build.SourcesDirectory)/${{ svc.path }}/Dockerfile'
-            buildContext: '$(Build.SourcesDirectory)/src/InventoryService/src' 
-
-            tags: |
-              $(imageTag)
-
-
+          - task: Docker@2
+            inputs:
+              containerRegistry: 'MyACRServiceConnection'
+              repository: ${{ svc.name }}
+              command: 'buildAndPush'
+              Dockerfile: '$(Build.SourcesDirectory)/${{ svc.path }}/Dockerfile'
+              buildContext: '$(Build.SourcesDirectory)/src/InventoryService/src'
+              tags: |
+                $(imageTag)
 
 - stage: Deploy
   dependsOn: BuildAndPush
@@ -48,30 +45,31 @@ stages:
       - job: Deploy_${{ svc.name }}
         displayName: Deploy ${{ svc.name }}
         steps:
-        
-
-
           - task: AzureCLI@2
             inputs:
               azureSubscription: 'MyAzureServiceConnection'
-              scriptType: 'bash'
+              scriptType: 'ps'  # PowerShell
               scriptLocation: 'inlineScript'
               inlineScript: |
-                echo "Deploying ${{ svc.name }}..."
+                Write-Host "Deploying ${{ svc.name }}..."
 
-                WINDOWS_TEMPLATE_PATH="$(Build.SourcesDirectory)/infrastructure/Bicep/main.bicep"
+                $templatePath = "$(Build.SourcesDirectory)\infrastructure\Bicep\main.bicep"
 
-                # Make sure backslashes are escaped or replaced with forward slashes only if your shell requires
+                if (-Not (Test-Path $templatePath)) {
+                  Write-Host "Bicep file NOT FOUND at: $templatePath"
+                  Get-ChildItem -Path "$(Build.SourcesDirectory)\infrastructure\Bicep\" | Format-List
+                  throw "Missing template file"
+                }
 
-                echo "Using Windows path for deployment: $WINDOWS_TEMPLATE_PATH"
+                Write-Host "Using Windows path for deployment: $templatePath"
 
-                az deployment group create \
-                  --resource-group $(resourceGroup) \
-                  --template-file "$WINDOWS_TEMPLATE_PATH" \
-                  --parameters acrName=$(acrName) \
-                              acrLoginServer=$(acrLoginServer) \
-                              containerAppName=${{ svc.name }} \
-                              env=$(env) \
-                              image=$(acrLoginServer)/${{ svc.name }}:$(imageTag) \
-                              revisionSuffix=rev-$(Build.BuildId)
-
+                az deployment group create `
+                  --resource-group $(resourceGroup) `
+                  --template-file "$templatePath" `
+                  --parameters `
+                    acrName=$(acrName) `
+                    acrLoginServer=$(acrLoginServer) `
+                    containerAppName="${{ svc.name }}" `
+                    env=$(env) `
+                    image="$(acrLoginServer)/${{ svc.name }}:$(imageTag)" `
+                    revisionSuffix="rev-$(Build.BuildId)"
