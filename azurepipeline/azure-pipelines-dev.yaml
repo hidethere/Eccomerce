@@ -63,9 +63,6 @@ stages:
 
                   Write-Host "Using Windows path for deployment: $templatePath"
 
-                  $imageName = "$(acrLoginServer)/$(svc.name.ToLower()):$(imageTag)"
-                  Write-Host "Deploying image: $imageName"
-
                   az deployment group create `
                     --resource-group $(resourceGroup) `
                     --template-file "$templatePath" `
@@ -73,6 +70,6 @@ stages:
                       BuildId=$(Build.BuildId) `
                       acrName=$(acrName) `
                       env=$(env) `
-                      image=$imageName`
+                      image=$(acrLoginServer)/${{ svc.name }}:$(imageTag) `
                       revisionSuffix="rev-$(Build.BuildId)"
 
