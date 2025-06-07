@@ -55,12 +55,19 @@ stages:
             scriptLocation: 'inlineScript'
             inlineScript: |
               echo "Deploying ${{ svc.name }}..."
+
+              # Convert Windows path to Linux path
+              TEMPLATE_PATH_WIN="$(Build.SourcesDirectory)/infrastructure/Bicep/main.bicep"
+              TEMPLATE_PATH_LINUX="/mnt/c/${TEMPLATE_PATH_WIN:3}"
+              TEMPLATE_PATH_LINUX="${TEMPLATE_PATH_LINUX//\\//}"  # replace backslashes with forward slashes
+
               az deployment group create \
                 --resource-group $(resourceGroup) \
-                --template-file $(Build.SourcesDirectory)/infrastructure/Bicep/main.bicep \
+                --template-file "$TEMPLATE_PATH_LINUX" \
                 --parameters acrName=$(acrName) \
-                             acrLoginServer=$(acrLoginServer) \
-                             containerAppName=${{ svc.name }} \
-                             env=$(env) \
-                             image=$(acrLoginServer)/${{ svc.name }}:$(imageTag) \
-                             revisionSuffix=rev-$(Build.BuildId)
+                            acrLoginServer=$(acrLoginServer) \
+                            containerAppName=${{ svc.name }} \
+                            env=$(env) \
+                            image=$(acrLoginServer)/${{ svc.name }}:$(imageTag) \
+                            revisionSuffix=rev-$(Build.BuildId)
+
