@@ -51,23 +51,25 @@ stages:
               scriptType: 'ps'  # PowerShell
               scriptLocation: 'inlineScript'
               inlineScript: |
-                Write-Host "Deploying ${{ svc.name }}..."
+                  Write-Host "Deploying ${{ svc.name }}..."
 
-                $templatePath = "$(Build.SourcesDirectory)\infrastructure\Bicep\main.bicep"
+                  $templatePath = "$(Build.SourcesDirectory)\infrastructure\Bicep\main.bicep"
 
-                if (-Not (Test-Path $templatePath)) {
-                  Write-Host "Bicep file NOT FOUND at: $templatePath"
-                  Get-ChildItem -Path "$(Build.SourcesDirectory)\infrastructure\Bicep\" | Format-List
-                  throw "Missing template file"
-                }
+                  if (-Not (Test-Path $templatePath)) {
+                    Write-Host "Bicep file NOT FOUND at: $templatePath"
+                    Get-ChildItem -Path "$(Build.SourcesDirectory)\infrastructure\Bicep\" | Format-List
+                    throw "Missing template file"
+                  }
 
-                Write-Host "Using Windows path for deployment: $templatePath"
+                  Write-Host "Using Windows path for deployment: $templatePath"
 
-                az deployment group create `
-                  --resource-group $(resourceGroup) `
-                  --template-file "$templatePath" `
-                  --parameters `
-                    acrName=$(acrName) `
-                    env=$(env) `
-                    image="$(acrLoginServer)/${{ svc.name }}:$(imageTag)" `
-                    revisionSuffix="rev-$(Build.BuildId)"
+                  az deployment group create `
+                    --resource-group $(resourceGroup) `
+                    --template-file "$templatePath" `
+                    --parameters `
+                      BuildId=$(Build.BuildId) `
+                      acrName=$(acrName) `
+                      env=$(env) `
+                      image="$(acrLoginServer)/${{ svc.name }}:$(imageTag)" `
+                      revisionSuffix="rev-$(Build.BuildId)"
+
