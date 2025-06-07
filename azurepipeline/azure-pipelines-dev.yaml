@@ -58,23 +58,22 @@ stages:
                 ls -l $(Build.SourcesDirectory)/infrastructure/Bicep/
               fi
             displayName: 'Debug: Check paths and files'
-        - task: AzureCLI@2
-          inputs:
-            azureSubscription: 'MyAzureServiceConnection'
-            scriptType: 'bash'
-            scriptLocation: 'inlineScript'
-            inlineScript: |
-              echo "Deploying ${{ svc.name }}..."
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: 'MyAzureServiceConnection'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                echo "Deploying ${{ svc.name }}..."
 
-              LINUX_TEMPLATE_PATH=$(echo "$(Build.SourcesDirectory)/infrastructure/Bicep/main.bicep" | sed 's|\\|/|g' | sed 's|C:|/mnt/c|i')
+                LINUX_TEMPLATE_PATH=$(echo "$(Build.SourcesDirectory)/infrastructure/Bicep/main.bicep" | sed 's|\\|/|g' | sed 's|C:|/mnt/c|i')
 
-              az deployment group create \
-                --resource-group $(resourceGroup) \
-                --template-file "$LINUX_TEMPLATE_PATH" \
-                --parameters acrName=$(acrName) \
-                            acrLoginServer=$(acrLoginServer) \
-                            containerAppName=${{ svc.name }} \
-                            env=$(env) \
-                            image=$(acrLoginServer)/${{ svc.name }}:$(imageTag) \
-                            revisionSuffix=rev-$(Build.BuildId)
-
+                az deployment group create \
+                  --resource-group $(resourceGroup) \
+                  --template-file "$LINUX_TEMPLATE_PATH" \
+                  --parameters acrName=$(acrName) \
+                              acrLoginServer=$(acrLoginServer) \
+                              containerAppName=${{ svc.name }} \
+                              env=$(env) \
+                              image=$(acrLoginServer)/${{ svc.name }}:$(imageTag) \
+                              revisionSuffix=rev-$(Build.BuildId)
