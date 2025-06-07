@@ -35,6 +35,7 @@ stages:
             Dockerfile: '$$(Build.SourcesDirectory)/${{ svc.path }}/Dockerfile'
             tags: |
               $(imageTag)
+              
 
 - stage: Deploy
   dependsOn: BuildAndPush
