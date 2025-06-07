@@ -68,7 +68,6 @@ stages:
                   --template-file "$templatePath" `
                   --parameters `
                     acrName=$(acrName) `
-                    acrLoginServer=$(acrLoginServer) `
                     containerAppName="${{ svc.name }}" `
                     env=$(env) `
                     image="$(acrLoginServer)/${{ svc.name }}:$(imageTag)" `
