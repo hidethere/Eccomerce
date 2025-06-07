@@ -32,10 +32,11 @@ stages:
             containerRegistry: 'MyACRServiceConnection'
             repository: ${{ svc.name }}
             command: 'buildAndPush'
-            Dockerfile: '$$(Build.SourcesDirectory)/${{ svc.path }}/Dockerfile'
+            Dockerfile: '$(Build.SourcesDirectory)/${{ svc.path }}/Dockerfile'
             tags: |
               $(imageTag)
-              
+
+
 
 - stage: Deploy
   dependsOn: BuildAndPush
