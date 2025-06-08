@@ -16,9 +16,14 @@ parameters:
     type: object
     default:
       - name: inventoryservice
-        path: src/InventoryService/src/InventoryService.API
+        dockerfilePath: src/InventoryService/src/InventoryService.API/Dockerfile
+        buildContext: src/InventoryService/src
+        projectPath: InventoryService.API/InventoryService.API.csproj
+
       - name: productservice
-        path: src/Product-service/src
+        dockerfilePath: src/Product-service/src
+        buildContext: src/Product-service/src
+        projectPath:  src/Product-service/src/Product-service.API.csproj
       # Add more services here...
 
 stages:
@@ -34,8 +39,8 @@ stages:
               containerRegistry: 'MyACRServiceConnection'
               repository: ${{ svc.name }}
               command: 'buildAndPush'
-              Dockerfile: '$(Build.SourcesDirectory)/${{ svc.path }}/Dockerfile'
-              buildContext: '$(Build.SourcesDirectory)/${{ svc.path }}'
+              Dockerfile: '$(Build.SourcesDirectory)/${{ svc.dockerfilePath }}'
+              buildContext: '$(Build.SourcesDirectory)/${{ svc.buildContext }}'
               tags: |
                 $(imageTag)
 
