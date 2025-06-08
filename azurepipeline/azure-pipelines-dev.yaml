@@ -16,7 +16,7 @@ parameters:
     type: object
     default:
       - name: inventoryservice
-        path: src/InventoryService/src/InventoryService.API
+        path: src/InventoryService/src
       - name: productservice
         path: src/Product-service/src
       # Add more services here...
