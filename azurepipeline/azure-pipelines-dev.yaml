@@ -20,6 +20,7 @@ parameters:
       - name: productservice
         path: src/Product-service/src
       # Add more services here...
+      
 
 stages:
 - stage: BuildAndPush
