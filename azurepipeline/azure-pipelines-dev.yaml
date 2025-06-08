@@ -78,6 +78,6 @@ stages:
                       acrName=$(acrName) `
                       env=$(env) `
                       image=$(acrLoginServer)/${{ svc.name }}:$(imageTag) `
-                      revisionSuffix="rev-$(Build.BuildId)" `
+                      revisionSuffix="rev-$(Build.BuildId)-$(Date -Format 'yyyyMMddHHmmss')" `
                       keyvaultUri=$(KEYVAULT_URI)
 
