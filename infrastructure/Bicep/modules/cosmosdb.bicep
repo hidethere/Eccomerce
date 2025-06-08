@@ -33,8 +33,7 @@ resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' = {
 }
 
 resource cosmosSqlDatabases 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2023-04-15' = [for dbName in cosmosDatabases: {
-  name: dbName
-  parent: cosmosAccount
+  name: '${cosmosAccountName}/${dbName}'  // <-- fix here
   properties: {
     resource: {
       id: dbName
