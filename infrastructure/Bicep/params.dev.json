@@ -1,3 +1,17 @@
 {
-  
+  "env": {
+    "value": "dev"
+  },
+  "location": {
+    "value": "switzerlandnorth"
+  },
+  "acrName": {
+    "value": "acreccomercedevv2"
+  },
+  "image": {
+    "value": "nginx"
+  },
+  "BuildId": {
+    "value": "1234567890" 
+  }
 }
