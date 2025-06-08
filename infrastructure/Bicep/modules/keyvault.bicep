@@ -7,7 +7,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   location: location
   properties: {
     tenantId: tenantId
-    publicNetworkAccess: 'Disabled'
+    publicNetworkAccess: 'Enabled'
     sku: {
       family: 'A'
       name: 'standard' // or 'premium'

@@ -1,7 +1,9 @@
 using System;
+using System.Reflection.Emit;
 using Azure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Product_service.Domain;
 using Product_service.Helper;
 using Product_service.Persistence;
 using Product_service.Repository;
@@ -11,19 +13,23 @@ var builder = WebApplication.CreateBuilder(args);
 
 var environment = builder.Environment.EnvironmentName; // "Development", "Production", etc.
 
-var keyVaultUri = environment == "Development"
-    ? new Uri("https://keyvault-eccomerce-devv3.vault.azure.net/")
-    : new Uri("https://keyvault-eccomerce-prodv3.vault.azure.net/");
+var keyVaultEndpointFromEnv = Environment.GetEnvironmentVariable("KEYVAULT_URI");
 
-builder.Configuration.AddAzureKeyVault(keyVaultUri, new DefaultAzureCredential());
+
+builder.Configuration.AddAzureKeyVault(new Uri(keyVaultEndpointFromEnv), new DefaultAzureCredential());
 
 // Get Cosmos settings from configuration
-var cosmosConnectionString = builder.Configuration["CosmosDbConnectionString"];
-var cosmosDbName = builder.Configuration["CosmosDbDatabaseName"];
+var productCosmosConnectionString = builder.Configuration["CosmosDbConnectionString"];
+var productCosmosDbName = builder.Configuration["ProductCosmosDbDatabaseName"];
 
-// Configure Cosmos DB
-builder.Services.AddDbContext<CosmoDbContext>(options =>
-    options.UseCosmos(cosmosConnectionString, cosmosDbName));
+var categoryCosmosConnectionString = builder.Configuration["CosmosDbConnectionString"];
+var categoryCosmosDbName = builder.Configuration["CategoryCosmosDbDatabaseName"];
+
+builder.Services.AddDbContext<ProductDbContext>(options =>
+    options.UseCosmos(productCosmosConnectionString, productCosmosDbName));
+
+builder.Services.AddDbContext<CategoryDbContext>(options =>
+    options.UseCosmos(categoryCosmosConnectionString, categoryCosmosDbName));
 
 builder.Services.AddScoped<IProductMapper, ProductMapper>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();

@@ -13,6 +13,7 @@ param eventHubName string = 'eventHub-Eccommerce-${env}-v2'
 param keyVaultName string = 'keyVault-Eccomerce-${env}v3'
 param apimName string = 'apim-Eccomerce-${env}v2'
 param acrName string // injected from the pipeline
+param keyvaultUri string // injected from the pipeline
 
 
 // Acr
@@ -78,6 +79,7 @@ module containerApps 'modules/aca.Bicep' = {
     revisionSuffix: revisionSuffix // inject from the pipeline
     userIdentityId: acaUserIdentity.outputs.uamiId
     userIdentityPrincipalId: acaUserIdentity.outputs.principalId
+    keyvaultUri: keyvaultUri
   }
 }
 

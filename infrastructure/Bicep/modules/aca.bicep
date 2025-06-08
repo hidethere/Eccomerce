@@ -7,6 +7,7 @@ param revisionSuffix string
 param userIdentityId string
 param userIdentityPrincipalId string
 param acrName string
+param keyvaultUri string
 
 resource acaEnv 'Microsoft.App/managedEnvironments@2023-05-01' existing = {
   name: environmentName
@@ -43,6 +44,12 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
         {
           name: containerAppName
           image: image
+          env: [
+            {
+              name: 'KEYVAULT_URI'
+              value: keyvaultUri
+            }
+          ]
         }
       ]
       revisionSuffix: revisionSuffix

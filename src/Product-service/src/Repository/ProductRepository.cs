@@ -6,8 +6,8 @@ namespace Product_service.Repository
 {
     public class ProductRepository : IProductRepository
     {
-        private readonly CosmoDbContext _appDbContext;
-        public ProductRepository(CosmoDbContext context) 
+        private readonly ProductDbContext _appDbContext;
+        public ProductRepository(ProductDbContext context) 
         { 
             _appDbContext = context;
         }

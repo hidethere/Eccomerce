@@ -15,18 +15,16 @@ namespace Product_service.Service
         private readonly IProductRepository _productRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly IProductMapper _productMapper;
-        private readonly ProductEventProducer _eventProducer;
         private readonly BlobContainerClient _containerClient;
 
-        public ProductService(IProductRepository productRepository, IProductMapper productMapper, ICategoryRepository categoryRepository, ProductEventProducer eventProducer, IConfiguration configuration)
+        public ProductService(IProductRepository productRepository, IProductMapper productMapper, ICategoryRepository categoryRepository, IConfiguration configuration)
         {
             _productRepository = productRepository;
             _productMapper = productMapper;
             _categoryRepository = categoryRepository;
-            _eventProducer = eventProducer;
-            var connectionString = configuration["AzureBlobStorage:ConnectionString"];
-            var containerName = configuration["AzureBlobStorage:ContainerName"];
-            _containerClient = new BlobContainerClient(connectionString, containerName);
+            //var connectionString = configuration["AzureBlobStorage:ConnectionString"];
+            //var containerName = configuration["AzureBlobStorage:ContainerName"];
+            //_containerClient = new BlobContainerClient(connectionString, containerName);
         }
         public async Task<ProductDto> CreateProductAsync(ProductDto productdto)
         {
@@ -90,7 +88,6 @@ namespace Product_service.Service
                 QuantitySold = request.QuantitySold,
                 SoldAt = DateTime.Now,
             };
-            await _eventProducer.PublishProductSoldEvent(productSoldEvent);
             return _productMapper.EntityToDto(product.Result);
         }
 

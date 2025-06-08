@@ -11,11 +11,9 @@ namespace Product_service.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
-        private readonly ProductEventProducer _productSoldEventProducer;
-        public ProductController(IProductService productService, ProductEventProducer productSoldEventProducer) 
+        public ProductController(IProductService productService) 
         {
             _productService = productService;
-            _productSoldEventProducer = productSoldEventProducer;
         
         }
 

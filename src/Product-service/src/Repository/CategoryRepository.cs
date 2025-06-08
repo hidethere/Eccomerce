@@ -6,8 +6,8 @@ namespace Product_service.Repository
 {
     public class CategoryRepository : ICategoryRepository
     {
-        private readonly CosmoDbContext _dbContext;
-        public CategoryRepository(CosmoDbContext appDbContext)
+        private readonly CategoryDbContext _dbContext;
+        public CategoryRepository(CategoryDbContext appDbContext)
         {
             _dbContext = appDbContext;
         }
