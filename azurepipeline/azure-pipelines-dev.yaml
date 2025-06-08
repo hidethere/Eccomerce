@@ -16,11 +16,10 @@ parameters:
     type: object
     default:
       - name: inventoryservice
-        path: src/InventoryService/src
+        path: src/InventoryService/src/InventoryService.API
       - name: productservice
         path: src/Product-service/src
       # Add more services here...
-      
 
 stages:
 - stage: BuildAndPush
