@@ -18,7 +18,7 @@ parameters:
       - name: inventoryservice
         path: src/InventoryService/src/InventoryService.API
       - name: productservice
-        path: src/ProductService/src
+        path: src/Product-service/src
       # Add more services here...
 
 stages:
