@@ -35,7 +35,7 @@ stages:
               repository: ${{ svc.name }}
               command: 'buildAndPush'
               Dockerfile: '$(Build.SourcesDirectory)/${{ svc.path }}/Dockerfile'
-              buildContext: '$(Build.SourcesDirectory)/src/InventoryService/src'
+              buildContext: '$(Build.SourcesDirectory)/${{ svc.path }}'
               tags: |
                 $(imageTag)
 
