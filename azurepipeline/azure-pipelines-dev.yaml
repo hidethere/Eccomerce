@@ -21,7 +21,7 @@ parameters:
         projectPath: InventoryService.API/InventoryService.API.csproj
 
       - name: productservice
-        dockerfilePath: src/Product-service/src
+        dockerfilePath: src/Product-service/src/Dockerfile
         buildContext: src/Product-service/src
         projectPath:  src/Product-service/src/Product-service.API.csproj
       # Add more services here...
