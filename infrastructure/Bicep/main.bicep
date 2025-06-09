@@ -56,34 +56,7 @@ module containerRegistry 'modules/acr.bicep' = {
   }
 }
 
-// Container Apps Env
-module containerAppsEnv 'modules/acaenv.bicep' = {
-  name: 'containerAppsEnvDeploy-${env}-1'
-  params: {
-    vnetId: vnet.outputs.vnetId
-    containerAppsEnvName: containerAppsEnvName
-    subnetName: containerAppsSubnetName
-    location: location
-  }
-}
 
-// Azure Container Apps
-module containerApps 'modules/aca.Bicep' = {
-  params: {
-    acrLoginServer: containerRegistry.outputs.acrLoginServer
-    containerAppName: containerAppsName
-    environmentName: containerAppsEnvName
-    acrName: containerRegistry.outputs.acrName
-    image: image // injected from the pipeline
-    location: location
-    revisionSuffix: revisionSuffix // inject from the pipeline
-    userIdentityId: acaUserIdentity.outputs.uamiId
-    userIdentityPrincipalId: acaUserIdentity.outputs.principalId
-    keyvaultUri: keyvaultUri
-    keyvaultId: keyVault.outputs.keyVaultId
-    keyvaultName: keyVault.outputs.keyvaultName
-  }
-}
 
 // Azure SQL
 module azureSql 'modules/azureSql.bicep' = {
@@ -140,6 +113,38 @@ module keyVault 'modules/keyVault.bicep' = {
   params: {
     keyVaultName: keyVaultName
     location: location
+  }
+}
+
+
+// Container Apps Env
+module containerAppsEnv 'modules/acaenv.bicep' = {
+  name: 'containerAppsEnvDeploy-${env}-1'
+  params: {
+    vnetId: vnet.outputs.vnetId
+    containerAppsEnvName: containerAppsEnvName
+    subnetName: containerAppsSubnetName
+    location: location
+  }
+}
+
+// Azure Container Apps
+module containerApps 'modules/aca.Bicep' = {
+  params: {
+    acrLoginServer: containerRegistry.outputs.acrLoginServer
+    containerAppName: containerAppsName
+    environmentName: containerAppsEnvName
+    acrName: containerRegistry.outputs.acrName
+    image: image // injected from the pipeline
+    location: location
+    revisionSuffix: revisionSuffix // inject from the pipeline
+    userIdentityId: acaUserIdentity.outputs.uamiId
+    userIdentityPrincipalId: acaUserIdentity.outputs.principalId
+    keyvaultUri: keyvaultUri
+    keyvaultId: keyVault.outputs.keyVaultId
+    keyvaultName: keyVault.outputs.keyvaultName
+    env:env
+    cosmosAccountUri: cosmosDb.outputs.cosmosAccountUri
   }
 }
 

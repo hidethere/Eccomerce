@@ -10,6 +10,8 @@ param acrName string
 param keyvaultUri string
 param keyvaultId string
 param keyvaultName string
+param env string
+param cosmosAccountUri string
 
 resource acaEnv 'Microsoft.App/managedEnvironments@2023-05-01' existing = {
   name: environmentName
@@ -83,6 +85,10 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
               name: 'KEYVAULT_URI'
               value: keyvaultUri
             }
+            {name: 'ENVIRONMENT_NAME', value: env}
+            {name: 'COSMOS_DB_URI', value: cosmosAccountUri}
+            {name: 'COSMOS_PRODUCTDB_NAME', value: 'productdb'}
+            {name: 'COSMOS_INVENTORYDB_NAME', value: 'inventorydb'} 
           ]
         }
       ]

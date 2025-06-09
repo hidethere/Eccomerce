@@ -44,3 +44,4 @@ resource cosmosSqlDatabases 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@
 }]
 
 output cosmosAccountId string = cosmosAccount.id
+output cosmosAccountUri string = cosmosAccount.properties.documentEndpoint

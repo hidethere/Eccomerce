@@ -14,19 +14,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Logging.AddConsole(); 
 
 
-var environment = builder.Environment.EnvironmentName; // "Development", "Production", etc.
+var environment = Environment.GetEnvironmentVariable("ENVIRONMENT_NAME");
 Console.WriteLine($"ENV: {environment}");
 
 var keyVaultUriEnv = Environment.GetEnvironmentVariable("KEYVAULT_URI");
-
 Console.WriteLine($"KEYVAULT_URI = {keyVaultUriEnv}");
-var keyVaultUri = new Uri(keyVaultUriEnv);
-
-builder.Configuration.AddAzureKeyVault(keyVaultUri, new DefaultAzureCredential());
 
 
-var productCosmosConnectionString = builder.Configuration["CosmosDbConnectionString"];
-var productCosmosDbName = builder.Configuration["ProductCosmosDbDatabaseName"];
+
+var productCosmosConnectionString = Environment.GetEnvironmentVariable("KEYVAULT_URI")
+var productCosmosDbName = Environment.GetEnvironmentVariable("KEYVAULT_URI")
 
 var categoryCosmosConnectionString = builder.Configuration["CosmosDbConnectionString"];
 var categoryCosmosDbName = builder.Configuration["CategoryCosmosDbDatabaseName"];
