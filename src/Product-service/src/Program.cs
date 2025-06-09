@@ -18,20 +18,11 @@ string cosmosUri;
 string cosmosDbNameProduct;
 string cosmosDbNameCategory;
 
-if (builder.Environment.IsDevelopment())
-{
-    Console.WriteLine("Running in Development Environment");
-    cosmosUri = config["CosmosDb:Uri"]!;
-    cosmosDbNameProduct = config["CosmosDb:ProductDbName"]!;
-    cosmosDbNameCategory = config["CosmosDb:CategoryDbName"]!;
-}
-else
-{
+
     cosmosUri = Environment.GetEnvironmentVariable("COSMOS_DB_URI");
     cosmosDbNameProduct = Environment.GetEnvironmentVariable("COSMOS_PRODUCTDB_NAME");
     cosmosDbNameCategory = Environment.GetEnvironmentVariable("COSMOS_INVENTORYDB_NAME");
 
-}
 
 
 builder.Services.AddDbContext<ProductDbContext>(options =>
