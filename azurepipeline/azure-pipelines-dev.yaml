@@ -16,13 +16,13 @@ parameters:
     type: object
     default:
       - name: inventoryservice
-        containerAppName: ContainerApps-InventoryService
+        containerAppsName: ContainerApps-InventoryService
         dockerfilePath: src/InventoryService/src/InventoryService.API/Dockerfile
         buildContext: src/InventoryService/src
         projectPath: InventoryService.API/InventoryService.API.csproj
 
       - name: productservice
-        containerAppName: ContainerApps-ProductService
+        containerAppsName: ContainerApps-ProductService
         dockerfilePath: src/Product-service/src/Dockerfile
         buildContext: src/Product-service/src
         projectPath:  src/Product-service/src/Product-service.API.csproj
@@ -79,7 +79,7 @@ stages:
                       BuildId=$(Build.BuildId) `
                       acrName=$(acrName) `
                       env=$(env) `
-                      containerAppName="${{ svc.containerAppName }}" `
+                      containerAppsName="${{ svc.containerAppsName }}" `
                       image=$(acrLoginServer)/${{ svc.name }}:$(imageTag) `
                       revisionSuffix="rev-$(Build.BuildId)-$(Date -Format 'yyyyMMddHHmmss')" `
                       keyvaultUri=$(KEYVAULT_URI)
