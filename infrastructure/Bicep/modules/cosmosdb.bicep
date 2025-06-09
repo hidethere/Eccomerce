@@ -45,3 +45,4 @@ resource cosmosSqlDatabases 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@
 
 output cosmosAccountId string = cosmosAccount.id
 output cosmosAccountUri string = cosmosAccount.properties.documentEndpoint
+output cosmosConnectionString string = 'AccountEndpoint=${cosmosAccount.properties.documentEndpoint};AccountKey=${listKeys(cosmosAccount.id, cosmosAccount.apiVersion).primaryMasterKey};'
