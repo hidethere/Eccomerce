@@ -10,15 +10,22 @@ using Product_service.Repository;
 using Product_service.Service;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.AddConsole(); 
+
 
 var environment = builder.Environment.EnvironmentName; // "Development", "Production", etc.
-
+Console.WriteLine($"ENV: {environment}");
 
 var keyVaultUriEnv = Environment.GetEnvironmentVariable("KEYVAULT_URI");
 
+Console.WriteLine($"KEYVAULT_URI = {keyVaultUriEnv}");
+
+
+
+
 var keyVaultUri = new Uri(keyVaultUriEnv);
 
-var client = new Azure.Security.KeyVault.Secrets.SecretClient(keyVaultUri, new DefaultAzureCredential());
+var client = new Azure.Security.KeyVault.Secrets.SecretClient(new Uri("https://keyVault-Eccomerce-devv3.vault.azure.net/"), new DefaultAzureCredential());
 
 try
 {
