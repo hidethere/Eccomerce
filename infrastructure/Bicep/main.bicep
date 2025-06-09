@@ -80,7 +80,6 @@ module containerApps 'modules/aca.Bicep' = {
     userIdentityId: acaUserIdentity.outputs.uamiId
     userIdentityPrincipalId: acaUserIdentity.outputs.principalId
     keyvaultUri: keyvaultUri
-    keyVaultName: keyVaultName
     keyvaultId: keyVault.outputs.keyVaultId
   }
 }

@@ -9,7 +9,6 @@ param userIdentityPrincipalId string
 param acrName string
 param keyvaultUri string
 param keyvaultId string
-param keyVaultName string
 
 resource acaEnv 'Microsoft.App/managedEnvironments@2023-05-01' existing = {
   name: environmentName
@@ -83,23 +82,4 @@ resource kvSecretsRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
 }
 
 
-// Policies
 
-
-resource kvAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2023-02-01' = {
-  name: '${keyVaultName}/add'
-  properties: {
-    accessPolicies: [
-      {
-        tenantId: subscription().tenantId
-        objectId: userIdentityPrincipalId
-        permissions: {
-          secrets: [
-            'get'
-            'list'
-          ]
-        }
-      }
-    ]
-  }
-}

@@ -13,6 +13,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
       name: 'standard' // or 'premium'
     }
     accessPolicies: [] // Empty for now or configure access policies here
+    enableRbacAuthorization: true
     enabledForDeployment: true
     enabledForDiskEncryption: true
     enabledForTemplateDeployment: true
