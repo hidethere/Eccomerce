@@ -20,10 +20,8 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
   name: containerAppName
   location: location
   identity: {
-    type: 'UserAssigned'
-    userAssignedIdentities: {
-      '${userIdentityId}': {}
-    }
+    type: 'SystemAssigned'
+   
   }
   properties: {
     managedEnvironmentId: acaEnv.id
