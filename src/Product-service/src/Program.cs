@@ -25,6 +25,9 @@ Console.WriteLine($"KEYVAULT_URI = {keyVaultUriEnv}");
 
 var keyVaultUri = new Uri(keyVaultUriEnv);
 
+builder.Configuration.AddAzureKeyVault(new Uri("https://keyVault-Eccomerce-devv3.vault.azure.net/"), new DefaultAzureCredential());
+
+
 var client = new Azure.Security.KeyVault.Secrets.SecretClient(new Uri("https://keyVault-Eccomerce-devv3.vault.azure.net/"), new DefaultAzureCredential());
 
 try
@@ -37,11 +40,12 @@ catch (Exception ex)
     Console.WriteLine($"Error accessing Key Vault: {ex.Message}");
 }
 
-var productCosmosConnectionString = builder.Configuration["CosmosDbConnectionString"];
-var productCosmosDbName = builder.Configuration["ProductCosmosDbDatabaseName"];
 
-var categoryCosmosConnectionString = builder.Configuration["CosmosDbConnectionString"];
-var categoryCosmosDbName = builder.Configuration["CategoryCosmosDbDatabaseName"];
+var productCosmosConnectionString = client.GetSecret("CosmosDbConnectionString").Value.Value;
+var productCosmosDbName = client.GetSecret("ProductCosmosDbDatabaseName").Value.Value;
+
+var categoryCosmosConnectionString = client.GetSecret("CosmosDbConnectionString").Value.Value;
+var categoryCosmosDbName = client.GetSecret("CategoryCosmosDbDatabaseName").Value.Value;
 
 builder.Services.AddDbContext<ProductDbContext>(options =>
     options.UseCosmos(productCosmosConnectionString, productCosmosDbName));
