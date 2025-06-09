@@ -18,6 +18,7 @@ string cosmosUri;
 string cosmosDbNameProduct;
 string cosmosDbNameCategory;
 
+
 if (builder.Environment.IsDevelopment())
 {
     Console.WriteLine("Running in Development Environment");
@@ -32,6 +33,9 @@ else
     cosmosDbNameCategory = Environment.GetEnvironmentVariable("COSMOS_CATEGORYDB_NAME");
 
 }
+
+Console.WriteLine($"Cosmos URI: {cosmosUri}");
+
 
 
 builder.Services.AddDbContext<ProductDbContext>(options =>
