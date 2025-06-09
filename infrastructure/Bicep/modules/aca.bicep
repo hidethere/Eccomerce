@@ -85,10 +85,22 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
               name: 'KEYVAULT_URI'
               value: keyvaultUri
             }
-            {name: 'ENVIRONMENT_NAME', value: env}
-            {name: 'COSMOS_DB_URI', value: cosmosAccountUri}
-            {name: 'COSMOS_PRODUCTDB_NAME', value: 'productdb'}
-            {name: 'COSMOS_CATEGORYDB_NAME', value: 'categorydb'} 
+            {
+              name: 'ENVIRONMENT_NAME'
+              value: env
+            }
+            {
+              name: 'COSMOS_DB_URI' 
+              value: cosmosAccountUri
+            }
+            {
+              name: 'COSMOS_PRODUCTDB_NAME' 
+              value: 'productdb'
+            }
+            {
+              name: 'COSMOS_CATEGORYDB_NAME'
+              value: 'categorydb'
+            } 
           ]
         }
       ]
