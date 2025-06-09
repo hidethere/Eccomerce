@@ -8,10 +8,9 @@ param userIdentityId string
 param userIdentityPrincipalId string
 param acrName string
 param keyvaultUri string
-param keyvaultId string
-param keyvaultName string
 param env string
 param cosmosConnectionString string
+param cosmosAccountName string
 
 resource acaEnv 'Microsoft.App/managedEnvironments@2023-05-01' existing = {
   name: environmentName
@@ -21,8 +20,8 @@ resource acr 'Microsoft.ContainerRegistry/registries@2023-01-01' existing = {
   name: acrName
 }
 
-resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
-  name: keyvaultName
+resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' existing = {
+  name: cosmosAccountName
 }
 
 // Role
@@ -38,16 +37,17 @@ resource acrPullRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-
   }
 }
 
-// Key Vault Role Assignment
-resource kvSecretsRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(keyvaultId, 'KeyVaultSecretsUser', userIdentityId)
-  scope: keyVault
+// Cosmos Role Assignment
+resource cosmosDataContributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(userIdentityPrincipalId, cosmosAccount.id, 'CosmosDataContributor')
+  scope: cosmosAccount
   properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b86a8fe4-44ce-4948-aee5-eccb2c155cd7') // Key Vault Secrets User role
-    principalId: userIdentityPrincipalId
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '5bd9cd88-fe45-4216-938b-f97437e15450')
+    principalId: containerApp.identity.principalId
     principalType: 'ServicePrincipal'
   }
 }
+
 resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
   name: containerAppName
   location: location

@@ -141,10 +141,9 @@ module containerApps 'modules/aca.Bicep' = {
     userIdentityId: acaUserIdentity.outputs.uamiId
     userIdentityPrincipalId: acaUserIdentity.outputs.principalId
     keyvaultUri: keyvaultUri
-    keyvaultId: keyVault.outputs.keyVaultId
-    keyvaultName: keyVault.outputs.keyvaultName
     env:env
     cosmosConnectionString: cosmosDb.outputs.cosmosConnectionString
+    cosmosAccountName: cosmosDb.outputs.cosmosAccountName
   }
 }
 

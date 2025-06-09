@@ -1,5 +1,6 @@
 using System;
 using System.Reflection.Emit;
+using Azure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Product_service.Domain;
@@ -34,18 +35,29 @@ else
 
 }
 
-Console.WriteLine($"Cosmos URI: {cosmosUri}");
 
 
 
 builder.Services.AddDbContext<ProductDbContext>(options =>
 {
-    options.UseCosmos(cosmosUri!, cosmosDbNameProduct!);
+    var credential = new DefaultAzureCredential();
+
+    options.UseCosmos(
+        accountEndpoint: cosmosUri!,
+        tokenCredential: credential,
+        databaseName: cosmosDbNameProduct!
+    );
 });
 
 builder.Services.AddDbContext<CategoryDbContext>(options =>
 {
-    options.UseCosmos(cosmosUri!, cosmosDbNameCategory!);
+    var credential = new DefaultAzureCredential();
+
+    options.UseCosmos(
+        accountEndpoint: cosmosUri!,
+        tokenCredential: credential,
+        databaseName: cosmosDbNameCategory!
+    );
 });
 
 builder.Services.AddScoped<IProductMapper, ProductMapper>();
