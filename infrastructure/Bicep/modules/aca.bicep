@@ -8,6 +8,8 @@ param userIdentityId string
 param userIdentityPrincipalId string
 param acrName string
 param keyvaultUri string
+param keyvaultId string
+param keyVaultName string
 
 resource acaEnv 'Microsoft.App/managedEnvironments@2023-05-01' existing = {
   name: environmentName
@@ -57,6 +59,9 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
   }
 }
 
+// Role
+
+// AcrPull Role Assignment 
 resource acrPullRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
   name: guid(userIdentityId, 'acrpull')
   scope: acr
@@ -67,3 +72,34 @@ resource acrPullRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-
   }
 }
 
+// Key Vault Role Assignment
+resource kvSecretsRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(keyvaultId, 'KeyVaultSecretsUser', userIdentityId)
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6') // Key Vault Secrets User
+    principalId: userIdentityPrincipalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+
+// Policies
+
+
+resource kvAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2023-02-01' = {
+  name: '${keyVaultName}/add'
+  properties: {
+    accessPolicies: [
+      {
+        tenantId: subscription().tenantId
+        objectId: userIdentityPrincipalId
+        permissions: {
+          secrets: [
+            'get'
+            'list'
+          ]
+        }
+      }
+    ]
+  }
+}
