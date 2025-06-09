@@ -37,9 +37,6 @@ catch (Exception ex)
     Console.WriteLine($"Error accessing Key Vault: {ex.Message}");
 }
 
-
-builder.Configuration.AddAzureKeyVault(keyVaultUri, new DefaultAzureCredential());
-
 var productCosmosConnectionString = builder.Configuration["CosmosDbConnectionString"];
 var productCosmosDbName = builder.Configuration["ProductCosmosDbDatabaseName"];
 
