@@ -15,7 +15,7 @@ namespace Product_service.Service
         private readonly IProductRepository _productRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly IProductMapper _productMapper;
-        private readonly BlobContainerClient _containerClient;
+        //private readonly BlobContainerClient _containerClient;
 
         public ProductService(IProductRepository productRepository, IProductMapper productMapper, ICategoryRepository categoryRepository, IConfiguration configuration)
         {
@@ -48,9 +48,9 @@ namespace Product_service.Service
             if(productdto.Image != null && productdto.Image.Length > 0)
             {
                 var fileName = $"product/{product.Name}/{productdto.Image.FileName}";
-                await _containerClient.UploadBlobAsync(fileName, productdto.Image.OpenReadStream());
-                var imageUrl = _containerClient.GetBlobClient(fileName);
-                product.ImageUrl = imageUrl.Uri.ToString();
+               // await _containerClient.UploadBlobAsync(fileName, productdto.Image.OpenReadStream());
+                //var imageUrl = _containerClient.GetBlobClient(fileName);
+                //product.ImageUrl = imageUrl.Uri.ToString();
             }
             
             await _productRepository.AddAsync(product);

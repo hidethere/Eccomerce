@@ -1,6 +1,5 @@
 using System;
 using System.Reflection.Emit;
-using Azure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Product_service.Domain;
@@ -8,34 +7,41 @@ using Product_service.Helper;
 using Product_service.Persistence;
 using Product_service.Repository;
 using Product_service.Service;
-using Azure.Extensions.AspNetCore.Configuration.Secrets;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Logging.AddConsole(); 
+builder.Logging.AddConsole();
+
+var config = builder.Configuration;
 
 
-var environment = Environment.GetEnvironmentVariable("ENVIRONMENT_NAME");
-Console.WriteLine($"ENV: {environment}");
+string cosmosUri;
+string cosmosDbNameProduct;
+string cosmosDbNameCategory;
 
-var keyVaultUriEnv = Environment.GetEnvironmentVariable("KEYVAULT_URI");
-Console.WriteLine($"KEYVAULT_URI = {keyVaultUriEnv}");
+if (builder.Environment.IsDevelopment())
+{
+    Console.WriteLine("Running in Development Environment");
+    cosmosUri = config["CosmosDb:Uri"]!;
+    cosmosDbNameProduct = config["CosmosDb:ProductDbName"]!;
+    cosmosDbNameCategory = config["CosmosDb:CategoryDbName"]!;
+}
+else
+{
+    cosmosUri = Environment.GetEnvironmentVariable("COSMOS_DB_URI");
+    cosmosDbNameProduct = Environment.GetEnvironmentVariable("COSMOS_PRODUCTDB_NAME");
+    cosmosDbNameCategory = Environment.GetEnvironmentVariable("COSMOS_INVENTORYDB_NAME");
 
+}
 
-
-var productCosmosConnectionString = Environment.GetEnvironmentVariable("COSMOS_DB_URI");
-var productCosmosDbName = Environment.GetEnvironmentVariable("COSMOS_PRODUCTDB_NAME");
-
-var categoryCosmosConnectionString = Environment.GetEnvironmentVariable("COSMOS_DB_URI");
-var categoryCosmosDbName = Environment.GetEnvironmentVariable("COSMOS_INVENTORYDB_NAME");
 
 builder.Services.AddDbContext<ProductDbContext>(options =>
 {
-    options.UseCosmos(productCosmosConnectionString!, productCosmosDbName!);
+    options.UseCosmos(cosmosUri!, cosmosDbNameProduct!);
 });
 
 builder.Services.AddDbContext<CategoryDbContext>(options =>
 {
-    options.UseCosmos(categoryCosmosConnectionString!, categoryCosmosDbName!);
+    options.UseCosmos(cosmosUri!, cosmosDbNameCategory!);
 });
 
 builder.Services.AddScoped<IProductMapper, ProductMapper>();
