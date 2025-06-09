@@ -16,13 +16,13 @@ parameters:
     type: object
     default:
       - name: inventoryservice
-        containerAppsName: ContainerApps-InventoryService
+        containerAppsName: inventoryservice-apps
         dockerfilePath: src/InventoryService/src/InventoryService.API/Dockerfile
         buildContext: src/InventoryService/src
         projectPath: InventoryService.API/InventoryService.API.csproj
 
       - name: productservice
-        containerAppsName: ContainerApps-ProductService
+        containerAppsName: productservice-apps
         dockerfilePath: src/Product-service/src/Dockerfile
         buildContext: src/Product-service/src
         projectPath:  src/Product-service/src/Product-service.API.csproj
