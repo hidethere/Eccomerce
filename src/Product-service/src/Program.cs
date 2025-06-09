@@ -22,17 +22,21 @@ Console.WriteLine($"KEYVAULT_URI = {keyVaultUriEnv}");
 
 
 
-var productCosmosConnectionString = Environment.GetEnvironmentVariable("KEYVAULT_URI")
-var productCosmosDbName = Environment.GetEnvironmentVariable("KEYVAULT_URI")
+var productCosmosConnectionString = Environment.GetEnvironmentVariable("COSMOS_DB_URI");
+var productCosmosDbName = Environment.GetEnvironmentVariable("COSMOS_PRODUCTDB_NAME");
 
-var categoryCosmosConnectionString = builder.Configuration["CosmosDbConnectionString"];
-var categoryCosmosDbName = builder.Configuration["CategoryCosmosDbDatabaseName"];
+var categoryCosmosConnectionString = Environment.GetEnvironmentVariable("COSMOS_DB_URI");
+var categoryCosmosDbName = Environment.GetEnvironmentVariable("COSMOS_INVENTORYDB_NAME");
 
 builder.Services.AddDbContext<ProductDbContext>(options =>
-    options.UseCosmos(productCosmosConnectionString, productCosmosDbName));
+{
+    options.UseCosmos(productCosmosConnectionString!, productCosmosDbName!);
+});
 
 builder.Services.AddDbContext<CategoryDbContext>(options =>
-    options.UseCosmos(categoryCosmosConnectionString, categoryCosmosDbName));
+{
+    options.UseCosmos(categoryCosmosConnectionString!, categoryCosmosDbName!);
+});
 
 builder.Services.AddScoped<IProductMapper, ProductMapper>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
