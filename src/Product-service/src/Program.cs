@@ -16,12 +16,21 @@ var environment = builder.Environment.EnvironmentName; // "Development", "Produc
 
 var keyVaultUriEnv = Environment.GetEnvironmentVariable("KEYVAULT_URI");
 
-if (string.IsNullOrEmpty(keyVaultUriEnv))
+var keyVaultUri = new Uri(keyVaultUriEnv);
+
+var client = new Azure.Security.KeyVault.Secrets.SecretClient(keyVaultUri, new DefaultAzureCredential());
+
+try
 {
-    throw new InvalidOperationException("Environment variable 'KEYVAULT_URI' is not set.");
+    var secret = client.GetSecret("CosmosDbConnectionString");
+    Console.WriteLine($"Secret value: {secret.Value.Value}");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Error accessing Key Vault: {ex.Message}");
 }
 
-var keyVaultUri = new Uri(keyVaultUriEnv);
+
 builder.Configuration.AddAzureKeyVault(keyVaultUri, new DefaultAzureCredential());
 
 var productCosmosConnectionString = builder.Configuration["CosmosDbConnectionString"];
