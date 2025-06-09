@@ -107,7 +107,7 @@ resource cosmosDataContributorRoleAssignment 'Microsoft.Authorization/roleAssign
   scope: cosmosAccount
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '5bd9cd88-fe45-4216-938b-f97437e15450')
-    principalId: containerApp.identity.principalId
+    principalId: userIdentityPrincipalId
     principalType: 'ServicePrincipal'
   }
 }
