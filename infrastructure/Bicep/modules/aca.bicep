@@ -37,16 +37,6 @@ resource acrPullRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-
   }
 }
 
-// Cosmos Role Assignment
-resource cosmosDataContributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(userIdentityPrincipalId, cosmosAccount.id, 'CosmosDataContributor')
-  scope: cosmosAccount
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '5bd9cd88-fe45-4216-938b-f97437e15450')
-    principalId: containerApp.identity.principalId
-    principalType: 'ServicePrincipal'
-  }
-}
 
 resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
   name: containerAppName
@@ -111,5 +101,15 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
 }
 
 
+// Cosmos Role Assignment
+resource cosmosDataContributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(userIdentityPrincipalId, cosmosAccount.id, 'CosmosDataContributor')
+  scope: cosmosAccount
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '5bd9cd88-fe45-4216-938b-f97437e15450')
+    principalId: containerApp.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
 
 
