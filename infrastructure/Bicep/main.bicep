@@ -23,7 +23,7 @@ param revisionSuffix string = 'rev-${BuildId}'
 
 // ACA
 param containerAppsEnvName string = 'containerAppsEnv-Eccomerce-${env}'
-param containerAppsName string = 'containerapps-eccomerce-${env}'
+param containerAppsName string
 
 // Vnet
 
