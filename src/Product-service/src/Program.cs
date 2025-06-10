@@ -29,7 +29,7 @@ if (builder.Environment.IsDevelopment())
 }
 else
 {
-    cosmosUri = Environment.GetEnvironmentVariable("COSMOS_DB_URI");
+    cosmosUri = Environment.GetEnvironmentVariable("AZURE_COSMOS_RESOURCEENDPOINT");
     cosmosDbNameProduct = Environment.GetEnvironmentVariable("COSMOS_PRODUCTDB_NAME");
     cosmosDbNameCategory = Environment.GetEnvironmentVariable("COSMOS_CATEGORYDB_NAME");
 
