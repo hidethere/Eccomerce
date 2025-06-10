@@ -121,7 +121,7 @@ resource cosmosDataContributorRoleAssignment 'Microsoft.Authorization/roleAssign
 
 resource connectedEnv 'Microsoft.App/connectedEnvironments@2023-08-01' = {
   name: 'connected-env-${containerAppName}'
-  location: location
+  location: 'eastus'
   properties: {
 
   }
