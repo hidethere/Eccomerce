@@ -119,3 +119,4 @@ resource cosmosDataContributorRoleAssignment 'Microsoft.Authorization/roleAssign
 
 
 
+
