@@ -23,7 +23,7 @@ string cosmosDbNameCategory;
 if (builder.Environment.IsDevelopment())
 {
     Console.WriteLine("Running in Development Environment");
-    cosmosUri = config["CosmosDb:Uri"]!;
+    cosmosUri = config["CosmosDb:UriLocal"]!;
     cosmosDbNameProduct = config["CosmosDb:ProductDbName"]!;
     cosmosDbNameCategory = config["CosmosDb:CategoryDbName"]!;
 }
@@ -35,29 +35,48 @@ else
 
 }
 
-
-
-
+// Product DB context setup
 builder.Services.AddDbContext<ProductDbContext>(options =>
 {
-    var credential = new DefaultAzureCredential();
-
-    options.UseCosmos(
-        accountEndpoint: cosmosUri!,
-        tokenCredential: credential,
-        databaseName: cosmosDbNameProduct!
-    );
+    if (builder.Environment.IsDevelopment())
+    {
+        // Use connection string for local dev
+        options.UseCosmos(
+            connectionString: cosmosUri!,
+            databaseName: cosmosDbNameProduct!
+        );
+    }
+    else
+    {
+        // Use token credential in production
+        var credential = new DefaultAzureCredential();
+        options.UseCosmos(
+            accountEndpoint: cosmosUri!,
+            tokenCredential: credential,
+            databaseName: cosmosDbNameProduct!
+        );
+    }
 });
 
+// Category DB context setup
 builder.Services.AddDbContext<CategoryDbContext>(options =>
 {
-    var credential = new DefaultAzureCredential();
-
-    options.UseCosmos(
-        accountEndpoint: cosmosUri!,
-        tokenCredential: credential,
-        databaseName: cosmosDbNameCategory!
-    );
+    if (builder.Environment.IsDevelopment())
+    {
+        options.UseCosmos(
+            connectionString: cosmosUri!,
+            databaseName: cosmosDbNameCategory!
+        );
+    }
+    else
+    {
+        var credential = new DefaultAzureCredential();
+        options.UseCosmos(
+            accountEndpoint: cosmosUri!,
+            tokenCredential: credential,
+            databaseName: cosmosDbNameCategory!
+        );
+    }
 });
 
 builder.Services.AddScoped<IProductMapper, ProductMapper>();
