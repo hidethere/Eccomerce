@@ -11,6 +11,8 @@ param keyvaultUri string
 param env string
 param cosmosConnectionString string
 param cosmosAccountName string
+param cosmosAccountId string
+param keyVaultId string
 
 resource acaEnv 'Microsoft.App/managedEnvironments@2023-05-01' existing = {
   name: environmentName
@@ -24,18 +26,6 @@ resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' existi
   name: cosmosAccountName
 }
 
-// Role
-
-// AcrPull Role Assignment 
-resource acrPullRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(userIdentityId, 'acrpull')
-  scope: acr
-  properties: {
-    principalId: userIdentityPrincipalId
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d') // AcrPull
-    principalType: 'ServicePrincipal'
-  }
-}
 
 
 resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
@@ -101,6 +91,20 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
 }
 
 
+
+// Role
+
+// AcrPull Role Assignment 
+resource acrPullRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(userIdentityId, 'acrpull')
+  scope: acr
+  properties: {
+    principalId: userIdentityPrincipalId
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d') // AcrPull
+    principalType: 'ServicePrincipal'
+  }
+}
+
 // Cosmos Role Assignment
 resource cosmosDataContributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
   name: guid(userIdentityPrincipalId, cosmosAccount.id, 'CosmosDataContributor')
@@ -113,4 +117,54 @@ resource cosmosDataContributorRoleAssignment 'Microsoft.Authorization/roleAssign
 }
 
 
+
+
+resource connectedEnv 'Microsoft.App/connectedEnvironments@2023-08-01' = {
+  name: 'connected-env-${containerAppName}'
+  location: location
+  properties: {
+
+  }
+}
+
+// Service Connector for Cosmos DB
+resource cosmosConnector 'Microsoft.App/connectedEnvironments/serviceConnectors@2023-08-01' = {
+  name: 'cosmosdb-connector'
+  parent: connectedEnv
+  properties: {
+    targetService: {
+      id: cosmosAccountId
+      type: 'AzureCosmosDb'
+    }
+    authInfo: {
+       authType: 'UserAssignedIdentity'
+      userAssignedIdentity: userIdentityId // use managed identity auth
+    }
+    clientType: 'ContainerApp'
+  }
+  dependsOn: [
+    containerApp
+  ]
+ 
+}
+
+// Service Connector for Key Vault
+resource keyVaultConnector 'Microsoft.App/connectedEnvironments/serviceConnectors@2023-08-01' = {
+  name: 'keyvault-connector'
+  parent: connectedEnv
+  properties: {
+    targetService: {
+      id: keyVaultId
+      type: 'AzureKeyVault'
+    }
+    authInfo: {
+       authType: 'UserAssignedIdentity'
+      userAssignedIdentity: userIdentityId
+    }
+    clientType: 'ContainerApp'
+  }
+  dependsOn: [
+    containerApp
+  ]
+}
 
