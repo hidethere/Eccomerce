@@ -29,9 +29,16 @@ if (builder.Environment.IsDevelopment())
 }
 else
 {
+    Console.WriteLine("Running in Development Environment");
+
     cosmosUri = Environment.GetEnvironmentVariable("AZURE_COSMOS_RESOURCEENDPOINT");
     cosmosDbNameProduct = Environment.GetEnvironmentVariable("COSMOS_PRODUCTDB_NAME");
     cosmosDbNameCategory = Environment.GetEnvironmentVariable("COSMOS_CATEGORYDB_NAME");
+
+    Console.WriteLine("cosmoUri: ${cosmosUri}");
+    Console.WriteLine("cosmoUri: ${cosmosDbNameProduct}");
+    Console.WriteLine("cosmoUri: ${cosmosDbNameCategory}");
+
 
 }
 
