@@ -20,70 +20,33 @@ string cosmosDbNameProduct;
 string cosmosDbNameCategory;
 
 
-if (builder.Environment.IsDevelopment())
-{
-    Console.WriteLine("Running in Development Environment");
-    cosmosUri = config["CosmosDb:UriLocal"]!;
-    cosmosDbNameProduct = config["CosmosDb:ProductDbName"]!;
-    cosmosDbNameCategory = config["CosmosDb:CategoryDbName"]!;
-}
-else
-{
-    Console.WriteLine("Running in Development Environment");
 
-    cosmosUri = Environment.GetEnvironmentVariable("AZURE_COSMOS_RESOURCEENDPOINT");
-    cosmosDbNameProduct = Environment.GetEnvironmentVariable("COSMOS_PRODUCTDB_NAME");
-    cosmosDbNameCategory = Environment.GetEnvironmentVariable("COSMOS_CATEGORYDB_NAME");
+Console.WriteLine("Running in Development Environment");
+cosmosUri = config["CosmosDb:UriLocal"]!;
+cosmosDbNameProduct = config["CosmosDb:ProductDbName"]!;
+cosmosDbNameCategory = config["CosmosDb:CategoryDbName"]!;
 
-    Console.WriteLine($"cosmoUri: {cosmosUri}");
-    Console.WriteLine($"cosmoUri: {cosmosDbNameProduct}");
-    Console.WriteLine($"cosmoUri: {cosmosDbNameCategory}");
-
-
-}
 
 // Product DB context setup
 builder.Services.AddDbContext<ProductDbContext>(options =>
 {
-    if (builder.Environment.IsDevelopment())
-    {
         // Use connection string for local dev
         options.UseCosmos(
             connectionString: cosmosUri!,
             databaseName: cosmosDbNameProduct!
         );
-    }
-    else
-    {
-        // Use token credential in production
-        var credential = new DefaultAzureCredential();
-        options.UseCosmos(
-            accountEndpoint: cosmosUri!,
-            tokenCredential: credential,
-            databaseName: cosmosDbNameProduct!
-        );
-    }
+
 });
 
 // Category DB context setup
 builder.Services.AddDbContext<CategoryDbContext>(options =>
 {
-    if (builder.Environment.IsDevelopment())
-    {
+  
         options.UseCosmos(
             connectionString: cosmosUri!,
             databaseName: cosmosDbNameCategory!
         );
-    }
-    else
-    {
-        var credential = new DefaultAzureCredential();
-        options.UseCosmos(
-            accountEndpoint: cosmosUri!,
-            tokenCredential: credential,
-            databaseName: cosmosDbNameCategory!
-        );
-    }
+
 });
 
 builder.Services.AddScoped<IProductMapper, ProductMapper>();
