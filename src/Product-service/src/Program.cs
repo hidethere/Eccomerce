@@ -22,15 +22,13 @@ string cosmosDbNameCategory;
 
 
 Console.WriteLine("Running in Development Environment");
-cosmosUri = config["CosmosDb:UriLocal"]!;
+cosmosUri = config["CosmosDb:Uri"]!;
 cosmosDbNameProduct = config["CosmosDb:ProductDbName"]!;
 cosmosDbNameCategory = config["CosmosDb:CategoryDbName"]!;
 
 
-// Product DB context setup
 builder.Services.AddDbContext<ProductDbContext>(options =>
 {
-        // Use connection string for local dev
         options.UseCosmos(
             connectionString: cosmosUri!,
             databaseName: cosmosDbNameProduct!
@@ -38,7 +36,6 @@ builder.Services.AddDbContext<ProductDbContext>(options =>
 
 });
 
-// Category DB context setup
 builder.Services.AddDbContext<CategoryDbContext>(options =>
 {
   
